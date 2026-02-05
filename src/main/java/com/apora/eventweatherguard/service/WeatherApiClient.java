@@ -72,7 +72,7 @@ public class WeatherApiClient {
                     !forecastTime.isAfter(end)) {
 
                 result.add(new HourlyForecastResponse(
-                        forecastTime.toLocalTime(),
+                        forecastTime,
                         hourly.getPrecipitation_probability().get(i),
                         hourly.getWind_speed_10m().get(i)
                 ));

@@ -44,6 +44,13 @@ public class EventForecastServiceImpl implements EventForecastService {
         EventForecastResponse response =
                 ruleEngine.evaluate(hourlyForecast);
 
+        List<HourlyForecastResponse> next24HoursForecast =
+                weatherApiClient.getHourlyForecast(
+                        request.getLocation(),
+                        request.getStartTime(),
+                        request.getStartTime().plusHours(24)
+                );
+
         //  BONUS PART CALLED HERE
         if (response.getClassification() != Classification.SAFE) {
 
@@ -53,7 +60,7 @@ public class EventForecastServiceImpl implements EventForecastService {
             );
 
             ruleEngine
-                    .recommendTimeWindow(hourlyForecast, eventDuration)
+                    .recommendTimeWindow(next24HoursForecast, eventDuration)
                     .ifPresent(response::setRecommendedWindow);
         }
 

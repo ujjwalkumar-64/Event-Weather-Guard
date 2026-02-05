@@ -116,11 +116,9 @@ public class WeatherRuleEngine {
 
                 bestSeverity = severity;
 
-                LocalDateTime startTime =
-                        LocalDateTime.now().plusHours(i);
+                LocalDateTime startTime = window.get(0).getTime();
+                LocalDateTime endTime = startTime.plus(eventDuration);
 
-                LocalDateTime endTime =
-                        startTime.plus(eventDuration);
 
                 bestWindow = new TimeWindowRecommendation(
                         startTime,
