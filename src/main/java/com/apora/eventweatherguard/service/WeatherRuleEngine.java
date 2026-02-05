@@ -3,10 +3,14 @@ package com.apora.eventweatherguard.service;
 import com.apora.eventweatherguard.response.Classification;
 import com.apora.eventweatherguard.response.EventForecastResponse;
 import com.apora.eventweatherguard.response.HourlyForecastResponse;
+import com.apora.eventweatherguard.response.TimeWindowRecommendation;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class WeatherRuleEngine {
@@ -15,7 +19,7 @@ public class WeatherRuleEngine {
     private static final double UNSAFE_WIND_THRESHOLD = 40.0;
     private static final int RISKY_RAIN_THRESHOLD = 60;
 
-    public EventForecastResponse evaluate(
+        public EventForecastResponse evaluate(
             List<HourlyForecastResponse> forecasts) {
 
         if (forecasts == null || forecasts.isEmpty()) {
@@ -83,6 +87,53 @@ public class WeatherRuleEngine {
                 .max()
                 .orElse(0);
     }
+
+    public Optional<TimeWindowRecommendation> recommendTimeWindow(
+            List<HourlyForecastResponse> forecasts,
+            Duration eventDuration) {
+
+        if (forecasts == null || forecasts.isEmpty()) {
+            return Optional.empty();
+        }
+
+        int windowSize = (int) eventDuration.toHours();
+
+        if (windowSize <= 0 || windowSize > forecasts.size()) {
+            return Optional.empty();
+        }
+
+        int bestSeverity = Integer.MAX_VALUE;
+        TimeWindowRecommendation bestWindow = null;
+
+        for (int i = 0; i + windowSize <= forecasts.size(); i++) {
+
+            List<HourlyForecastResponse> window =
+                    forecasts.subList(i, i + windowSize);
+
+            int severity = calculateSeverity(window);
+
+            if (severity < bestSeverity) {
+
+                bestSeverity = severity;
+
+                LocalDateTime startTime =
+                        LocalDateTime.now().plusHours(i);
+
+                LocalDateTime endTime =
+                        startTime.plus(eventDuration);
+
+                bestWindow = new TimeWindowRecommendation(
+                        startTime,
+                        endTime,
+                        severity,
+                        "Lower rain probability and calmer winds"
+                );
+            }
+        }
+
+        return Optional.ofNullable(bestWindow);
+    }
+
 
 }
 

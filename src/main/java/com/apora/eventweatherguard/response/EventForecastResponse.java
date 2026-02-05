@@ -14,5 +14,7 @@ public class EventForecastResponse {
     private String summary;
     private List<String> reason;
     private List<HourlyForecastResponse> eventWindowForecast;
+    private TimeWindowRecommendation recommendedWindow;
+
 }
 

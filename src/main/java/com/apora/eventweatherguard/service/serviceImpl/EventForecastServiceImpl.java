@@ -1,5 +1,6 @@
 package com.apora.eventweatherguard.service.serviceImpl;
 
+import com.apora.eventweatherguard.response.Classification;
 import com.apora.eventweatherguard.service.EventForecastService;
 import com.apora.eventweatherguard.service.WeatherApiClient;
 import com.apora.eventweatherguard.service.WeatherRuleEngine;
@@ -11,6 +12,7 @@ import com.apora.eventweatherguard.response.EventForecastResponse;
 import com.apora.eventweatherguard.response.HourlyForecastResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -39,7 +41,24 @@ public class EventForecastServiceImpl implements EventForecastService {
                         request.getEndTime()
                 );
 
-        return ruleEngine.evaluate(hourlyForecast);
+        EventForecastResponse response =
+                ruleEngine.evaluate(hourlyForecast);
+
+        //  BONUS PART CALLED HERE
+        if (response.getClassification() != Classification.SAFE) {
+
+            Duration eventDuration = Duration.between(
+                    request.getStartTime(),
+                    request.getEndTime()
+            );
+
+            ruleEngine
+                    .recommendTimeWindow(hourlyForecast, eventDuration)
+                    .ifPresent(response::setRecommendedWindow);
+        }
+
+        return response;
     }
+
 }
 
