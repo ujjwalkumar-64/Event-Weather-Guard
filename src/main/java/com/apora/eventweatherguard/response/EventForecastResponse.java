@@ -10,6 +10,7 @@ import java.util.List;
 public class EventForecastResponse {
 
     private Classification classification;
+    private int severityScore;
     private String summary;
     private List<String> reason;
     private List<HourlyForecastResponse> eventWindowForecast;

@@ -59,12 +59,30 @@ public class WeatherRuleEngine {
             List<String> reasons,
             List<HourlyForecastResponse> forecasts) {
 
+        int severity = calculateSeverity(forecasts);
+
         return EventForecastResponse.builder()
                 .classification(classification)
+                .severityScore(severity)
                 .summary(reasons.get(0))
                 .reason(reasons)
                 .eventWindowForecast(forecasts)
                 .build();
+
     }
+
+    private int calculateSeverity(List<HourlyForecastResponse> forecasts) {
+
+        return forecasts.stream()
+                .mapToInt(f -> {
+                    int rain = f.getRainProbability();
+                    int wind = (int) Math.min((f.getWindKmh() / 50.0) * 100, 100);
+
+                    return (int) (0.6 * rain + 0.4 * wind);
+                })
+                .max()
+                .orElse(0);
+    }
+
 }
 
