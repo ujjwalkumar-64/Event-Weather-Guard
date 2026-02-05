@@ -166,6 +166,44 @@ Example error response:
 
 ---
 
+## 🧪 Unit Testing
+
+The project includes focused **unit tests only for the service layer and business logic**, avoiding controller-level tests to keep the test suite fast and deterministic.
+
+### Test Structure
+
+The test directory mirrors the main source structure:
+
+```
+src/test/java/com/apora/eventweatherguard
+└── service
+    ├── WeatherRuleEngineTest.java
+    └── EventForecastServiceImplTest.java
+```
+
+### Testing Strategy
+
+* **WeatherRuleEngineTest**
+
+    * Verifies Safe / Risky / Unsafe classification logic
+    * Covers edge cases such as empty forecasts
+
+* **EventForecastServiceImplTest**
+
+    * Validates request time constraints (`startTime < endTime`)
+    * Mocks external dependencies (Weather API client, Rule Engine)
+    * Ensures correct orchestration and delegation
+
+Tests are written using **JUnit 5** and **Mockito** and are fully deterministic (no external API calls).
+
+Run tests using:
+
+```bash
+mvn test
+```
+
+---
+
 ## 🌟 Possible Extensions
 
 * Numeric severity score (0–100)
@@ -185,4 +223,3 @@ Built as part of a backend intern take‑home assignment to demonstrate:
 * Readable and maintainable code
 
 ---
- 
