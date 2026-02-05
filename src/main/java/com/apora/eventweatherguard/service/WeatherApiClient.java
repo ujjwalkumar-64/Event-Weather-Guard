@@ -3,6 +3,7 @@ package com.apora.eventweatherguard.service;
 import com.apora.eventweatherguard.request.LocationRequest;
 import com.apora.eventweatherguard.response.HourlyForecastResponse;
 import com.apora.eventweatherguard.response.OpenMeteoResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -12,13 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class WeatherApiClient {
 
     private final WebClient webClient;
 
-    public WeatherApiClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
 
     public List<HourlyForecastResponse> getHourlyForecast(
             LocationRequest location,
